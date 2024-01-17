@@ -53,6 +53,8 @@ https://github.com/LabEG/devpc/blob/master/Dockerfile
 
 https://github.com/kbuley/basedevcontainer/blob/main/debian.Dockerfile
 
+https://github.com/MicrosoftDocs/azure-docs-cli/blob/main/docs-ref-conceptual/includes/cli-install-linux-apt.md
+https://learn.microsoft.com/en-us/cli/azure/install-azure-cli-linux?pivots=apt
 
 
 
