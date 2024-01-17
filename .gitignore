@@ -1,0 +1,37 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# project
+*project.md
+
+# dependencies
+node_modules/
+
+# Include all .env files in directory but not .secrets
+!.env/
+.secrets.js
+.production.secrets.js
+.local.env.js
+
+# export
+**/out/
+**/export/
+
+# production
+build/
+**/.tsc/
+
+# ignore
+.git-DISABLED/
+.ignore/
+.ignore-*
+
+# debug
+npm-debug.log*
+.pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+**/log/
+**/.log/
+
+# misc
+.DS_Store
