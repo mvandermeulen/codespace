@@ -1,0 +1,392 @@
+Help
+
+
+Installed env
+  - pyenv (python)
+  - jabba (jdk)
+  - nvm (node)
+  - go
+  - ptpython (interactive python console)
+    - $ ptpython
+  - rust
+  - dart
+
+
+Tmux
+  HotKey
+    <Ctrl> + b
+
+  Rename window
+    <Hotkey> -> ,
+
+  Rename Session
+    <Hotkey> -> $
+
+  HotKey(e.g remote) in tmux session (Send hotkey twice)
+    <HotKey> -> <HotKey>
+
+  Create new window
+    <HotKey> -> c
+
+  Close window force
+    <HotKey> -> x
+
+  Change window previous
+    <HotKey> -> p
+
+  Change window next
+    <HotKey> -> n
+
+  Find window/pane
+    <HotKey> -> f
+
+  Split screen (vertical)
+    <HotKey> -> %
+
+  Split screen (horizontal)
+    <HotKey> -> "
+
+  Command
+    <HotKey> -> :
+
+    Clear history
+      clear-history
+
+    Show key binds
+      list-keys
+
+  Resize pane
+    By 5 characters
+      <Hotkey> -> <Alt> + <Arrow Left/Right/Up/Down>
+
+    By 2 characters
+      <Alt> + <Arrow Left/Right/Up/Down>
+
+  Cursor control
+    Move cursor forward over word
+      Alt + f
+
+    Move cursor backward over word
+      Alt + b
+
+    Move cursor start of line
+      Ctrl + a
+
+    Move cursor end of line
+      Ctrl + e
+
+  Edit mode
+    <HotKye> -> [
+
+      Search text (vim shorcut)
+        - forward: /
+        - backward: ?
+        - next: n
+        - previos: N
+
+      Cursor drag (visual mode)
+        <Ctrl> + <Space>
+        v
+
+      Copy selected
+        y
+
+      Copy and exit edit mode
+        <Ctrl> + w
+
+  Paste on tmux
+    <HotKey> -> ]
+
+  Detach
+    <HotKey> ->  d
+
+  Close panel
+    <Ctrl> -> d
+
+  Rotate panel (up)
+    <HotKey> -> <Ctrl> + o
+
+  Rotate panel (down)
+    <HotKey> -> <Alt> + o
+
+
+W3M
+  Open url
+    $ w3m {URL}
+
+    Open new tab
+      <Shift> + t
+
+    Move tab
+      <Shift> + { / }
+
+    Refresh
+      <Shift> + r
+
+    Change URL
+      <Shift> + u
+
+    Close
+      <Shift> + q
+
+
+Vim
+
+  <Leader>
+    ,
+
+  Move cursor
+    Previous cursor
+      <Ctrl> + o
+
+    Next cursor
+      <Ctrl> + i
+
+    Skip word
+        Backward
+          b
+
+        Forward
+          e
+
+  Change Tab
+    \ + [1..9]
+
+  Go to definition (Using tag)
+    <Ctrl> + ]
+
+  Replace dragged in visual mode
+    <Ctrl> + r
+
+  Find dragged string in visual mode
+    <Ctrl> + f
+
+  Show debug messages
+    :messages
+
+  vim-lsc (autocomplete via key typing)
+    Go to definition (:LSClientGoToDefinition)
+      <Leader> + d
+
+    List references (:LSClientFindReferenses)
+      <Leader> + r
+
+    Autocomplete manually (wired omnifunc to lsc#complete#complete)
+      <Ctrl> + x -> <Ctrl> + o
+
+    Quick fix (Code action) (similar with Alt+Enter in intellij)
+      <Ctrl> + a
+
+    Rename (Include references) (similar with Shift+F6 in intellij)
+      <F6>
+
+  Macro
+    Start macro recording
+      q -> {any key for macro}
+
+    Stop recording
+      q
+
+    Run macro
+      @ -> {recorded macro key}
+
+    Run last ran macro
+      @@
+
+    Run macro n times
+      {n} -> @
+
+  Change colorScheme
+    :colorscheme default
+
+    To default as permanantly
+      $ echo "colorscheme default" >> ~/.vim_runtime/my_configs.vim
+
+    Alternatives for default
+      peaksea / PaperColor ...
+
+  NerdTree
+    :NERDTree
+
+    Move to current directory
+      CD
+
+    Move cursor between NerdTree
+      <Ctrl> + w -> <Arrow Left/Right>
+
+    Move cursor back to NerdTree
+      <Ctrl> + w -> e
+
+    Move cursor back to NerdTree with opend file
+      <Ctrl> + w -> g
+
+    On NERDTree
+      Help
+        ?
+
+      Open with vertical new tab
+        s
+
+      Open with horizontal new tab
+        i
+
+      Open in opened tab
+        o
+
+      Modify nodes
+        m
+
+        Add new file
+          a
+
+      Refresh nodes
+        R
+
+      Set current cursor as root
+        C
+
+   Resize Panel
+     Make panes as same size
+       Ctrl + w -> =
+
+     Vertical (left, right)
+       :vertical resize {SIZE}
+
+     Vertical Shortcut
+       {SIZE} -> Ctrl + w -> { < \ > }
+
+     Horizontal (top, bottom)
+       :resize {SIZE}
+
+     Horizontal Shortcut
+       {SIZE} -> Ctrl + w -> { - / + }
+
+
+  FZF
+    Find files on current path
+      :Files <Path/None>
+
+    List lines on current file
+      :Lines
+
+    List buffers (prev/next/... files)
+      :Buffers
+
+    Find text matches on current path(ripgrep)
+      :Rg <Pattern>
+
+  Change working directory
+    :cd {PATH}
+
+  Set visual selection
+    v
+
+    Change visual selected block
+      <Ctrl> + <r>
+
+    Find text visual selected block
+      <Ctrl> + <f>
+
+  Hexa
+    Enter hex edit mode
+      :%!xxd
+
+      With column
+        :%!xxd -c 24
+
+    Exit hex edit mode (before save)
+      :%!xxd -r
+
+      With column
+        :%!xxd -r -c 24
+
+  Tab control (vim-buffet)
+
+    Move tab forward
+      <Tab>
+
+    Move tab backward
+      <Shift> + <Tab>
+
+    Close tab
+      <Leader> + w
+
+    Close tab without current tab
+      :Bonly
+
+kafkactl
+
+    Edit context
+        $ vi $HOME/.config/kafkactl/config.yaml
+
+    Consume message
+        $ kafkactl consume {TOPIC}
+
+    Produce message
+        $ kafkactl produce {TOPIC} --key={KEY} --value={VALUE}
+
+    Reset consumer group offset
+        $ kafkactl reset offset {GROUP} --topic {TOPIC} --offset {OFFSET}
+
+cqlsh
+
+    (Read DataStax license: https://www.datastax.com/legal/datastax-cqlsh-license-terms)
+    And manually install with:
+        1. $ wget -O $INSTALL_PATH/cqlsh-astra.tar.gz https://downloads.datastax.com/enterprise/cqlsh-astra.tar.gz
+        2. $ tar -xzvf $INSTALL_PATH/cqlsh-astra.tar.gz -C $INSTALL_PATH
+        3. $ sudo ln -sf $INSTALL_PATH/cqlsh-astra/bin/cqlsh /usr/local/bin/cqlsh
+
+    Connect to cassandra
+        $ cqlsh -u {USER} -p {PASSWORD} {HOST} {PORT}
+
+natscli
+
+    Add context and select as default context
+        $ nats context add nats --server {HOST} --description {DESCRIPTION} --select
+
+    Show context list
+        $ nats context ls
+
+
+httpie (curl alternative)
+
+    Request(use https for using tls)
+      $ http {url}
+
+          Form request
+            -f {METHOD} param=value
+
+          Json request
+            {METHOD} param=value
+
+          With header
+            X-Header:Value
+
+
+jless (json viewer)
+
+    Parse json
+      $ jless {FILENAME}
+
+
+zellij (tmux alternative)
+
+    Start zellij (shotrcuts below)
+      $ zellij
+
+    List zellij
+      $ zellij ls
+
+    Attach zellij session
+      $ zellij attach
+
+ouch (CLI tool for compressing and decompressing for various formats)
+
+    Compress (zip)
+      $ ouch compress one.txt two.txt archive.zip
+
+    Compress (using .lz4 and .zst)
+      $ ouch compress file.txt file.txt.lz4.zst
+
+    Decompress (regardless of format)
+      $ ouch decompress summer_vacation.zip
