@@ -51,4 +51,8 @@ nvm use "$NODE_USE_VERSION"
 # cat /tmp/bashrc-additions.sh >> ~/.bashrc
 # sudo rm /tmp/bashrc-additions.sh
 
+# Allow to install global packages without sudo.
+mkdir $HOME/.npm-packages
+npm config set prefix $HOME/.npm-packages
+
 exit 0
