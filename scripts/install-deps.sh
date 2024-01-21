@@ -7,7 +7,7 @@ set -x
 set -e
 
 
-CORE_APT_DEPS="coreutils bash ncurses-base sudo zip unzip zsh locales util-linux"
+CORE_APT_DEPS="coreutils bash ncurses-base sudo zip unzip zsh locales util-linux sqlite3 procps checkinstall bc"
 BUILD_APT_DEPS="ninja-build gettext libevent-dev ncurses-dev build-essential make bison llvm libtool libtool-bin autoconf automake gcc cmake g++ pkg-config git binutils fontconfig"
 STD_APT_DEPS="ca-certificates apt-transport-https lsb-release vim fd-find rename ripgrep tree htop gnupg xz-utils gawk ncurses-term sed tar tig upx axel"
 WEB_APT_DEPS="wget curl w3m w3m-img netcat socat mtr openssh-client"

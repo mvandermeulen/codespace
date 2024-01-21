@@ -9,7 +9,7 @@ set -e
 USERNAME=${USERNAME:-"dev"}
 HOME=${HOME:-"/home/$USERNAME"}
 
-RUST_PACHAGES="cargo-watch jless ouch zellij"
+RUST_PACHAGES="cargo-watch jless ouch zellij hgrep"
 
 
 cargo-install() {
