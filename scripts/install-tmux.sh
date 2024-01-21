@@ -1,10 +1,13 @@
-#!/usr/bin/env bash
+#!/bin/sh
 
 # Print out every line being run
 set -x
 
 # If a command fails, exit immediately.
 set -e
+
+USERNAME=${USERNAME:-"dev"}
+HOME=${HOME:-"/home/$USERNAME"}
 
 apt-install() {
 	sudo apt-get install --no-install-recommends -y "$@"
@@ -27,14 +30,6 @@ install-tmux() {
 	popd
 }
 
-install-powerline() {
-	# POWER TMUX
-	sudo pip3 install powerline-status
-
-	# Make git status extra nice :)
-	sudo pip3 install powerline-gitstatus
-}
-
 
 sudo apt-get update
 
@@ -49,15 +44,47 @@ install-powerline
 
 install-tmux
 
-# Add fzf fuzzy finder
-git clone https://github.com/junegunn/fzf.git ~/.fzf
-~/.fzf/install --all
-
-# Add bashrc addons for powerline and etc.
-cat /tmp/bashrc-additions.sh >> "$HOME/.bashrc"
-sudo rm /tmp/bashrc-additions.sh
-
 # Cleanup cache
 sudo apt-get clean
 sudo rm -rf /var/lib/apt/lists/*
 sudo apt-get autoremove -y
+
+RUN wget https://github.com/tmux/tmux/releases/download/3.3a/tmux-3.3a.tar.gz && \
+  tar xvf tmux-3.3a.tar.gz && \
+  cd ./tmux-3.3a && \
+  ./configure && \
+  make && make install
+# Configure tmux
+RUN cp .dotfiles/tmux/.tmux.conf $HOME/
+RUN cp .dotfiles/tmux/.tmux.conf $RHOME/
+RUN git clone https://github.com/tmux-plugins/tpm $HOME/.tmux/plugins/tpm
+RUN cp -r $HOME/.tmux $RHOME/.tmux
+RUN tmux start-server \
+    && tmux new-session -d \
+    && sleep 1 \
+    && $HOME/.tmux/plugins/tpm/scripts/install_plugins.sh \
+    && tmux kill-server
+RUN mkdir -p $HOME/.tmux/scripts \
+    && cp -r .dotfiles/tmux/scripts $HOME/.tmux/
+RUN mkdir -p $RHOME/.tmux/scripts \
+    && cp -r .dotfiles/tmux/scripts $RHOME/.tmux/
+
+
+# Configure tmux
+cp $HOME/.dotfiles/tmux/.tmux.conf $HOME/
+cp $HOME/.dotfiles/tmux/.tmux.conf $RHOME/
+git clone https://github.com/tmux-plugins/tpm $HOME/.tmux/plugins/tpm
+cp -r $HOME/.tmux $RHOME/.tmux
+tmux start-server \
+ && tmux new-session -d \
+ && sleep 1 \
+ && $HOME/.tmux/plugins/tpm/scripts/install_plugins.sh \
+ && tmux kill-server
+mkdir -p $HOME/.tmux/scripts \
+ && cp -r $HOME/.dotfiles/tmux/scripts $HOME/.tmux/
+mkdir -p $RHOME/.tmux/scripts \
+ && cp -r $HOME/.dotfiles/tmux/scripts $RHOME/.tmux/
+
+
+
+

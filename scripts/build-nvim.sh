@@ -1,14 +1,22 @@
-#!/usr/bin/env bash
+#!/bin/sh
 
-set -ex
+# Print out every line being run
+set -x
+
+# If a command fails, exit immediately.
+set -e
+
+USERNAME=${USERNAME:-"dev"}
+HOME=${HOME:-"/home/$USERNAME"}
+
+apt-install() {
+	sudo apt-get install --no-install-recommends -y "$@"
+}
+
 
 sudo apt-get update
 
-apt-install () {
-	sudo apt-get install -y --no-install-recommends "$@"
-}
-
-apt-install software-properties-common -y
+apt-install software-properties-common
 
 # Fix the permissions from the copy...
 sudo chown -R "$USER:$USER" "$HOME/.config/nvim"
