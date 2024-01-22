@@ -9,10 +9,13 @@ set -e
 USERNAME=${USERNAME:-"dev"}
 HOME=${HOME:-"/home/$USERNAME"}
 
-PYTHON_PACKAGES="setuptools gitgud ptpython vmux pylint flake8 black python-lsp-server[all] python-language-server grpcio-tools"
-PYTHON_ROOT_PACKAGES="pip ranger-fm thefuck httpie jedi virtualenv ptpython neovim pipenv poetry mypy"
+PYTHON_PACKAGES="setuptools gitgud ptpython vmux pylint flake8 black python-lsp-server[all] python-language-server grpcio-tools cython cookiecutter pgzero lizard ruff"
+PYTHON_ROOT_PACKAGES="pip ranger-fm thefuck httpie jedi virtualenv ptpython neovim pipenv poetry mypy notebook"
 # tldr
 
+PYTHON_DATA_SCIENCE_PACKAGES="scikit-learn matplotlib hydra perfect"
+
+PYTORCH_PACKAGES="torch torchvision torchaudio"
 
 pip-root-install() {
 	sudo python3 -m pip install --upgrade "$@"
@@ -20,6 +23,9 @@ pip-root-install() {
 
 pip-install() {
 	python3 -m pip install --upgrade "$@"
+	if [ $? -gt 0 ]; then
+        python3 -m pip install -U --upgrade "$@"
+    fi
 }
 
 python3 -m pip install --upgrade pip

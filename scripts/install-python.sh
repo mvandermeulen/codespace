@@ -8,9 +8,18 @@ set -e
 
 USERNAME=${USERNAME:-"dev"}
 HOME=${HOME:-"/home/$USERNAME"}
+INSTALL_PATH=${INSTALL_PATH:-"/home/$USERNAME/.installed"}
 PYTHON_VERSION_MAJOR=${PYTHON_VERSION_MAJOR:-"3.12"}
-PYTHON_VERSION=${PYTHON_VERSION:-"$PYTHON_VERSION_MAJOR.0"}
+PYTHON_VERSION=${PYTHON_VERSION:-"$PYTHON_VERSION_MAJOR.1"}
 
+git clone https://github.com/pyenv/pyenv.git ~/.pyenv
+echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bashrc
+echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bashrc
+echo 'eval "$(pyenv init -)"' >> ~/.bashrc
+source ~/.bashrc
+git clone https://github.com/pyenv/pyenv-virtualenv.git $HOME/.pyenv/plugins/pyenv-virtualenv
+echo 'eval "$(pyenv virtualenv-init -)"' >> ~/.bashrc
+source ~/.bashrc
 
 sudo git clone https://github.com/pyenv/pyenv.git /opt/.pyenv \
     && /opt/.pyenv/bin/pyenv install $PYTHON_VERSION \
@@ -20,19 +29,15 @@ sudo git clone https://github.com/pyenv/pyenv.git /opt/.pyenv \
 
 # Install pyenv
 # https://github.com/pyenv/pyenv-installer
+# curl https://pyenv.run | bash
 
-curl https://pyenv.run | bash
-
-# Pyenv requirements
-sudo dnf install -y \
-    make gcc zlib-devel bzip2 bzip2-devel readline-devel sqlite sqlite-devel openssl-devel tk-devel libffi-devel
-
-pyenv install 3.12.1
+pyenv install $PYTHON_VERSION
 
 # Create neovim environment
 pyenv virtualenv --system-site-packages --force system neovim
-PYENV_ROOT=~/.pyenv
-PATH="$PYENV_ROOT/versions/neovim/bin:$PATH" pip install --upgrade pip pynvim pydbus sphinx
+PYENV_ROOT=$HOME/.pyenv
+PATH="$PYENV_ROOT/versions/neovim/bin:$PATH" pip install --upgrade pip pynvim pydbus sphinx cython virtualenv
 
+pip install -U pip
 
 exit 0

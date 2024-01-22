@@ -8,6 +8,7 @@ set -e
 
 USERNAME=${USERNAME:-"dev"}
 HOME=${HOME:-"/home/$USERNAME"}
+INSTALL_PATH=${INSTALL_PATH:-"/home/$USERNAME/.installed"}
 RHOME=${RHOME:-"/root"}
 ZSH=${ZSH:-"$HOME/.oh-my-zsh"}
 RZSH=${RZSH:-"$RHOME/.oh-my-zsh"}
@@ -22,6 +23,9 @@ curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/instal
 # Plugins
 git clone --depth=1 https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
 git clone --depth=1 https://github.com/zsh-users/zsh-completions ~/.oh-my-zsh/custom/plugins/zsh-completions
+git clone https://github.com/zdharma/fast-syntax-highlighting.git \
+    ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/fast-syntax-highlighting
+
 
 
 # Install and configure oh-my-zsh

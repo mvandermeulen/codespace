@@ -17,4 +17,10 @@ mkdir -pv $INSTALL_PATH && mkdir -pv $HOME/$CODESPACE \
     && mkdir -pv $HOME/.tmux/{scripts,themes,plugins} \
     && mkdir -pv $HOME/.tmuxp
 
+# Fix up permissions for /usr/local
+sudo chown -R "$USERNAME":users /usr/local
+sudo find /usr/local -type d -exec chmod "u=rwx,g=rwx,o=rx" {} \;
+sudo find /usr/local/bin -type f -exec chmod "u=rwx,g=rwx,o=rx" {} \;
+sudo find /usr/local/bin -type l -exec chmod "u=rwx,g=rwx,o=rx" {} \;
+
 exit 0

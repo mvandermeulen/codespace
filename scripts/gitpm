@@ -1,0 +1,74 @@
+#!/bin/bash
+
+# Define the GitHub user and repository
+GITHUB_USER_REPO="$1"
+
+# Define the API URL to fetch the latest release from the GitHub repository
+API_URL="https://api.github.com/repos/$GITHUB_USER_REPO/releases/latest"
+
+# Define the installation path
+INSTALL_PATH="$HOME/.local/bin"
+
+# Fetch the latest release data using GitHub API
+RELEASE_DATA=$(curl -s $API_URL)
+
+# Determine the architecture of the current machine
+ARCH=$(uname -m)
+
+# Select the appropriate file extension and asset based on the architecture
+if [ "$ARCH" = "arm64" ]; then
+    # Assuming ARM binaries are tagged with 'arm64' or similar in their names
+    ASSET_URL=$(echo $RELEASE_DATA | jq -r '.assets[] | select(.name | contains("arm64") and endswith(".zip")).browser_download_url')
+else
+    # For x86_64 (Intel/AMD) architectures
+    ASSET_URL=$(echo $RELEASE_DATA | jq -r '.assets[] | select(.name | endswith(".zip") and (contains("amd64") or contains("x86_64"))).browser_download_url')
+fi
+
+# Check if the asset URL is empty
+if [ -z "$ASSET_URL" ]; then
+    echo "Error: No compatible asset found for the latest release."
+    exit 1
+fi
+
+# Download the asset
+curl -L $ASSET_URL -o /tmp/github_release.zip
+
+# Create the installation directory if it doesn't exist
+mkdir -p $INSTALL_PATH
+
+# Unzip the release
+unzip /tmp/github_release.zip -d $INSTALL_PATH
+
+# Remove the downloaded zip file
+rm /tmp/github_release.zip
+
+echo "Installation complete. The release has been installed to $INSTALL_PATH"
+
+# Define the path
+BIN_PATH="$HOME/.local/bin"
+
+# Loop through each item in the directory
+for item in "$BIN_PATH"/*; do
+    # Check if the item is a directory
+    if [ -d "$item" ]; then
+        # Count the number of files in the directory
+        file_count=$(find "$item" -maxdepth 1 -type f | wc -l)
+
+        # Proceed if there is exactly one file in the directory
+        if [ "$file_count" -eq 1 ]; then
+            # Get the full path of the file
+            file_path=$(find "$item" -maxdepth 1 -type f)
+
+            # Move the file to BIN_PATH
+            mv "$file_path" "$BIN_PATH"
+            
+            # Make the binary executable
+            chmod +x "$BIN_PATH/$(basename "$file_path")"
+
+            # Remove the now-empty directory
+            rmdir "$item"
+        fi
+    fi
+done
+
+echo "Cleanup complete."

@@ -6,6 +6,11 @@ set -x
 # If a command fails, exit immediately.
 set -e
 
-apt-install() {
-	sudo apt-get install --no-install-recommends -y "$@"
-}
+USERNAME=${USERNAME:-"dev"}
+HOME=${HOME:-"/home/$USERNAME"}
+INSTALL_PATH=${INSTALL_PATH:-"/home/$USERNAME/.installed"}
+
+mkdir -p $HOME/.tmux/plugins
+git clone https://github.com/tmux-plugins/tpm $HOME/.tmux/plugins/tpm
+
+exit 0

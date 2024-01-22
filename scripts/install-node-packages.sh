@@ -9,8 +9,10 @@ set -e
 USERNAME=${USERNAME:-"dev"}
 HOME=${HOME:-"/home/$USERNAME"}
 
-NODE_NPM_PACKAGES="npm yarn pnpm eslint prettier typescript"
+NODE_NPM_PACKAGES="npm yarn pnpm eslint eslint_d prettier stylelint eslint-config-prettier eslint-plugin-prettier prettier-eslint-cli htmlhint uuid-cli"
 NODE_YARN_PACKAGES=""
+
+NODE_NVIM_PACKAGES="typescript typescript-language-server neovim tree-sitter-cli"
 
 npm-install() {
 	npm install -g "$@"
@@ -23,6 +25,10 @@ yarn-install() {
 npm-install "yarn"
 
 for item in $NODE_NPM_PACKAGES; do
+	npm-install "$item"
+done
+
+for item in $NODE_NVIM_PACKAGES; do
 	npm-install "$item"
 done
 

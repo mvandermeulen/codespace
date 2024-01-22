@@ -8,6 +8,7 @@ set -e
 
 USERNAME=${USERNAME:-"dev"}
 HOME=${HOME:-"/home/$USERNAME"}
+INSTALL_PATH=${INSTALL_PATH:-"/home/$USERNAME/.installed"}
 
 apt-install() {
 	sudo apt-get install --no-install-recommends -y "$@"

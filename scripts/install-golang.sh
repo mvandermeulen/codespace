@@ -17,6 +17,7 @@ wget -O "$INSTALL_PATH/go${GOLANG_VERSION}.linux-amd64.tar.gz" "https://go.dev/d
     && sudo mkdir -p "${GOLANG_DIR}" \
     && sudo tar -C "${GOLANG_DIR}" -xvf "$INSTALL_PATH/go${GOLANG_VERSION}.linux-amd64.tar.gz" \
     && sudo update-alternatives --install /usr/bin/go go "${GOLANG_DIR}/go/bin/go" 100 --force \
-    && sudo update-alternatives --install /usr/bin/gofmt gofmt "${GOLANG_DIR}/go/bin/gofmt" 100 --force
+    && sudo update-alternatives --install /usr/bin/gofmt gofmt "${GOLANG_DIR}/go/bin/gofmt" 100 --force \
+    && sudo ln "${GOLANG_DIR}/go/bin/go" /usr/local/bin/go
 
 exit 0

@@ -1,0 +1,9 @@
+[plugins]
+[plugins.zsh-autosuggestions]
+github = 'zsh-users/zsh-autosuggestions'
+[plugins.zsh-z]
+github = 'agkozak/zsh-z'
+[plugins.zsh-bd]
+github = 'Tarrasch/zsh-bd'
+[plugins.zsh-cdr]
+github = 'willghatch/zsh-cdr'

@@ -21,8 +21,6 @@ COPY ./scripts/install-deps.sh .
 COPY ./scripts/configure-timezone-locales.sh .
 COPY ./setup-user.sh .
 
-COPY --chown=$USERNAME ./config/HELP /home/$USERNAME/HELP
-
 RUN ./install-deps.sh \
     && ./configure-timezone-locales.sh \
     && export LANG=en_AU.UTF-8 
@@ -75,7 +73,8 @@ ENV TARGET $TARGET
 RUN ./scripts/install-python.sh \
     && ./scripts/install-node.sh \
     && ./scripts/install-rust.sh \
-    && ./scripts/install-golang.sh
+    && ./scripts/install-golang.sh \
+    && ./scripts/install-ruby.sh
 
 ENV GO111MODULE="on"
 ENV PYENV_ROOT="/opt/.pyenv"

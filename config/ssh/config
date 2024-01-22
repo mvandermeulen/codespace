@@ -1,0 +1,14 @@
+Host *
+  StrictHostKeyChecking no
+  AddKeysToAgent yes
+  SetEnv TERM=xterm
+  #LogLevel VERBOSE
+
+Host bitbucket.org
+     IdentityFile ~/.ssh/bitbucket_mvandermeulen
+
+Host gitlab.com
+     IdentityFile ~/.ssh/gitlab_mvandermeulen
+
+Host github.com
+     IdentityFile ~/.ssh/github_mvandermeulen

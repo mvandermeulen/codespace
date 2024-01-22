@@ -31,4 +31,5 @@ sudo chown -R $USERNAME $HOME \
 
 # Cleanup cache
 sudo apt-get autoremove -y && sudo apt-get clean && sudo rm -rf /var/lib/apt/lists/*
+sudo apt-get clean && sudo rm -rf /var/cache/apt/* && sudo rm -rf /var/lib/apt/lists/* && sudo rm -rf /tmp/*
 exit 0
