@@ -63,6 +63,8 @@ echo -e '\033[6 q'
 #   Set VARS
 #   ------------------------------------------------------------
     export XDG_CONFIG_HOME=$HOME/.config
+    # mise
+    [[ -f $HOME/.local/bin/mise ]] && eval "$(~/.local/bin/mise activate zsh)"
     # pyenv
     export PYENV_ROOT="$HOME/.pyenv"
     export PATH="$PYENV_ROOT/bin:$PATH"
@@ -74,7 +76,7 @@ echo -e '\033[6 q'
 
     # rbenv
     # eval "$(rbenv init -)"
-    eval "$(~/.rbenv/bin/rbenv init - zsh)"
+    [[ -f $HOME/.rbenv/bin/rbenv ]] && eval "$(~/.rbenv/bin/rbenv init - zsh)"
     export GEM_HOME=$HOME/.gem
     export PATH=$GEM_HOME/bin:$PATH
     #export PATH=$PATH:$(yarn global bin)

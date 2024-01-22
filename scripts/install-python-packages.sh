@@ -16,6 +16,7 @@ PYTHON_ROOT_PACKAGES="pip ranger-fm thefuck httpie jedi virtualenv ptpython neov
 PYTHON_DATA_SCIENCE_PACKAGES="scikit-learn matplotlib hydra perfect"
 
 PYTORCH_PACKAGES="torch torchvision torchaudio"
+PYTHON_CLIENTS="pgcli iredis"
 
 pip-root-install() {
 	sudo python3 -m pip install --upgrade "$@"
