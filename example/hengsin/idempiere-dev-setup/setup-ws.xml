@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="project" default="default">  
+<path id="groovy.classpath">
+        <fileset dir="${basedir}/groovy-4.0.13/lib/">
+            <include name="*.jar" />
+        </fileset>
+</path>
+<taskdef name="groovy"
+         classname="org.codehaus.groovy.ant.Groovy"
+         classpathref="groovy.classpath" />  
+<target name="default">
+    <groovy>
+		import java.io.*;
+		import java.util.*;
+		import java.util.regex.*;
+		import java.time.LocalDateTime;
+
+		import org.eclipse.core.resources.*;
+		import org.eclipse.core.runtime.*;
+		import org.eclipse.core.runtime.jobs.*;
+		import org.eclipse.equinox.app.*;
+		import org.osgi.framework.*;
+		import org.eclipse.jdt.core.*;
+
+		import static groovy.io.FileType.*
+ 
+        	bundle = org.eclipse.core.runtime.Platform.getBundle("org.eclipse.core.resources");
+        	resPlugin = bundle.loadClass("org.eclipse.core.resources.ResourcesPlugin");
+        	workspace = resPlugin.getWorkspace();
+        
+       	println ""
+       	println "*** " + LocalDateTime.now().toString() + " Import projects into workspace ***";
+       	println ""
+        
+        	def groovySrcDir = new File(project.properties."idempiere");
+        
+		groovySrcDir.eachFile {
+            		fullPath = it.getAbsolutePath();			
+			if (fullPath.endsWith("org.idempiere.javadoc") || fullPath.endsWith("ztl") || fullPath.endsWith("selenese") 
+				|| fullPath.endsWith("doc") || fullPath.endsWith("fitnesse") || fullPath.endsWith("migration")
+				|| fullPath.endsWith("event.test") || fullPath.endsWith("org.adempiere.report.jasper.fragment.test") 
+				|| fullPath.endsWith("utils_dev") || fullPath.endsWith("db")
+				|| fullPath.endsWith("org.adempiere.ui.zk.example"))
+				return;
+				
+			projectFile = new File(it, ".project");
+			if (!projectFile.exists()) return;
+			
+			projectDescription = workspace.loadProjectDescription(new Path(projectFile.getAbsolutePath()));
+			println(projectDescription.getName());
+			project = workspace.getRoot().getProject(projectDescription.getName());
+			if (project.isOpen() == false) {
+				project.create(projectDescription, null);
+				project.open(null);
+			} else {
+				project.refreshLocal(IResource.DEPTH_INFINITE, null);
+			}
+		}
+		
+		def estimatedTotal = 0;
+		def workedTotal = 0;
+		def monitor = [ blockedReason: null,
+				 beginTask: {String name, Integer totalWork -> println name; estimatedTotal = totalWork;},
+				 setBlocked: {reason -> blockedReason = reason; println "Blocked: " + reason},	
+				 clearBlocked: {-> if (blockedReason != null) {println "Clear Block: " + blockedReason; blockedReason = null;}},
+				 done: {-> println "done"}, 
+				 internalWorked: {Double work -> println "..."},
+				 isCanceled: {-> return false}, 
+				 setCanceled: {Boolean value -> println "setCanceled: " + value},
+				 setTaskName: {String name -> println "Task: " + name}, 
+				 subTask: {String name -> println "Sub task: " + name},
+				 worked: {Integer work -> workedTotal += work; println "Progress: " + workedTotal + " of " + estimatedTotal}];
+		
+		Hashtable options = JavaCore.getOptions();
+		options.put(JavaCore.COMPILER_COMPLIANCE, "17");
+		options.put(JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM, "17");
+		options.put(JavaCore.COMPILER_SOURCE, "17");
+		JavaCore.setOptions(options);
+		
+		println ""		
+		println "*** " + LocalDateTime.now().toString() + " Saving workspace after import ***";			
+		println ""		 
+		workspace.save(true, monitor as IProgressMonitor);
+    </groovy>
+</target>
+</project>

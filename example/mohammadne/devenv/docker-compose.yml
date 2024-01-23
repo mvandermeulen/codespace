@@ -1,0 +1,12 @@
+---
+version: '3.8'
+services:
+  devenv:
+    image: ghcr.io/mohammadne/devenv:latest
+    stdin_open: true # docker run -i
+    tty: true # docker run -t
+    environment:
+      - SSH_AUTH_SOCK=${SSH_AUTH_SOCK}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock # docker-daemon
+      - $SSH_AUTH_SOCK:$SSH_AUTH_SOCK # Forward local machine SSH key to docker

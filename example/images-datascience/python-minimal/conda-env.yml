@@ -1,0 +1,20 @@
+channels:
+  - conda-forge
+
+dependencies:
+  - boto3
+  - duckdb
+  - flake8
+  - hvac
+  - ipykernel
+  - ipywidgets
+  - mypy
+  - nbclient
+  - nbformat
+  - pip
+  - pyarrow
+  - pylint
+  - python-kubernetes
+  - requests
+  - s3fs
+  - wheel

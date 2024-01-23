@@ -1,0 +1,27 @@
+language: generic
+
+sudo: required
+
+matrix:
+  include:
+    - os: linux
+      dist: trusty
+
+    - os: osx
+      osx_image: xcode8.1
+
+  allow_failures:
+    - os: osx
+
+branches:
+  only: master
+
+before_script:
+  - ./test/pre_installations.sh
+  - ./test/test_prerequisites.sh
+
+script:
+  - ./test/run_test.sh
+
+after_success:
+  - ./test/check_travis_result.sh

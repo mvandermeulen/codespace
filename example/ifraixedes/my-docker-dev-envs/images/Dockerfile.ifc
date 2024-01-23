@@ -1,0 +1,49 @@
+FROM ifraixedes/ubuntu/base:22.04
+
+ARG USER_NAME
+ARG DOCKER_GID
+
+RUN mkdir /tmp/box-setup
+ADD setup-scripts /tmp/box-setup/setup-scripts
+
+RUN cd /tmp/box-setup/setup-scripts \
+      && ./99-amber.sh \
+      && ./99-chroma.sh \
+      && ./99-bat.sh \
+      && ./99-deno.sh \
+      && ./99-difftastic.sh \
+      && ./99-docker-cli.sh "${USER_NAME}" "${DOCKER_GID}" \
+      && ./99-earthly.sh \
+      && ./99-embedded-programming.sh \
+      && ./99-exercism.sh \
+      && ./99-fzf.sh \
+      && ./99-glow.sh \
+      && ./99-golang.sh \
+      && ./99-golang-revive.sh \
+      && ./99-hyperfine.sh \
+      && ./99-hugo.sh \
+      && ./99-libssl-dev.sh \
+      && ./99-mcfly.sh \
+      && ./99-mods.sh \
+      && ./99-oha.sh \
+      && ./99-pkg-config.sh \
+      && ./99-procs.sh \
+      && ./99-ripgrep.sh \
+      && ./99-rustup-init.sh \
+      && ./99-rust-bindgen-requirements.sh \
+      && ./99-rust-dev-requirements.sh \
+      && ./99-shell-fmt.sh \
+      && ./99-shellcheck.sh \
+      && ./99-solidity.sh \
+      && ./99-sqlite.sh \
+      && ./99-tig.sh \
+      && ./99-vale.sh \
+      && ./99-watchexec.sh \
+      && ./99-zig.sh \
+      && apt-get autoremove \
+      && apt-get clean
+
+RUN rm -rf /tmp/box-setup
+WORKDIR "/home/${USER_NAME}"
+
+CMD ["bash"]

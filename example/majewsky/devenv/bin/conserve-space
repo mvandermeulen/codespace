@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+
+# list of large directories below $HOME that do not need to be backed up
+LOCATIONS=(
+    ".bundle/cache"
+    ".cache"
+    ".cargo"
+    ".config/discord/Cache"
+    ".config/Electron/Cache"
+    ".config/Element/Cache"
+    ".config/discord/Code Cache"
+    ".debug"
+    ".fontconfig"
+    ".gem/specs"
+    ".glide/cache"
+    ".helm/cache"
+    ".helm/repository/cache"
+    ".kube"
+    ".local/bin"
+    ".local/etc"
+    ".local/include"
+    ".local/lib"
+    ".local/share/helm"
+    ".local/share/TelegramDesktop/tdata/user_data/cache"
+    ".local/share/virtualenv/wheel"
+    ".node-gyp"
+    ".phantomjs"
+    ".rbenv"
+    ".rustup"
+    ".var/app/com.obsproject.Studio/config/obs-studio/plugin_config/obs-browser/Code Cache"
+)
+
+# if these directories exist in $HOME, move them to the scratch area
+for LOC in "${LOCATIONS[@]}"; do
+    INSIDE_LOC="${HOME}/${LOC}"
+    OUTSIDE_LOC="/x/scratch/${LOC}"
+
+    if [ -d "${INSIDE_LOC}" -a ! -L "${INSIDE_LOC}" ]; then
+        mkdir -p "$(dirname "${OUTSIDE_LOC}")"
+        mv "${INSIDE_LOC}" "${OUTSIDE_LOC}"
+    fi
+
+    if [ -d "${OUTSIDE_LOC}" -a ! -L "${OUTSIDE_LOC}" ]; then
+        ln -sfT "${OUTSIDE_LOC}" "${INSIDE_LOC}"
+    fi
+done

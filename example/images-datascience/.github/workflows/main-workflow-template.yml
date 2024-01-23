@@ -1,0 +1,222 @@
+name: Template to build and push Docker images
+
+env:
+  OWNER: ${{ github.repository_owner }}
+
+on:
+  workflow_call:
+    inputs:
+      test:
+        description: should test
+        required: false
+        type: string
+      image:
+        description: name of docker image
+        required: false
+        type: string
+      prefix:
+        description: prefix for docker images
+        required: false
+        type: string
+        default: 'onyxia'
+      context:
+        description: context of docker image
+        required: false
+        type: string
+      base_image:
+        description: context of docker image
+        required: true
+        type: string
+      base_image_gpu:
+        description: context of docker image
+        required: false
+        type: string
+      external_base_image:
+        description: is base image from another organization
+        required: false
+        type: boolean
+      python_version_1:
+        description: context of docker image
+        required: false
+        type: string
+      python_version_2:
+        description: context of docker image
+        required: false
+        type: string
+      r_version_1:
+        description: context of docker image
+        required: false
+        type: string
+      r_version_2:
+        description: context of docker image
+        required: false
+        type: string
+      spark_version:
+        description: context of docker image
+        required: false
+        type: string
+      branch:
+        description: branch that triggered the workflow
+        required: false
+        type: string
+    secrets:
+      DOCKERHUB_USERNAME:
+        required: false
+      DOCKERHUB_TOKEN:
+        required: false
+      GITHUB_PAT:
+        required: false
+
+jobs:
+  matrix_prep:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+    - name: Check out code 
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ inputs.branch }}
+    - id: set-matrix
+      run: |
+        base_image_escaped=$(echo ${{inputs.base_image}} | sed 's/\//\\\//g' )
+        base_image_gpu_escaped=$(echo ${{inputs.base_image_gpu}} | sed 's/\//\\\//g' )
+        sed -i "s/:base_image_gpu/$base_image_gpu_escaped/g" ./releases/${{ inputs.image }}.json
+        sed -i "s/:base_image/$base_image_escaped/g" ./releases/${{ inputs.image }}.json
+        sed -i "s/:python_version_1/${{inputs.python_version_1}}/g" ./releases/${{ inputs.image }}.json
+        sed -i "s/:python_version_2/${{inputs.python_version_2}}/g" ./releases/${{ inputs.image }}.json
+        sed -i "s/:r_version_1/${{inputs.r_version_1}}/g" ./releases/${{ inputs.image }}.json
+        sed -i "s/:r_version_2/${{inputs.r_version_2}}/g" ./releases/${{ inputs.image }}.json
+        sed -i "s/:spark_version/${{inputs.spark_version}}/g" ./releases/${{ inputs.image }}.json
+        matrix=$(cat ./releases/${{ inputs.image }}.json | jq .)
+        echo $matrix
+        echo "matrix={\"include\":$(echo $matrix)}" >> $GITHUB_OUTPUT
+  docker:
+    runs-on: ubuntu-latest
+    needs: matrix_prep
+    strategy:
+      fail-fast: false
+      matrix: 
+        ${{fromJson(needs.matrix_prep.outputs.matrix)}}
+    steps:
+      - name: Check out code 
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branch }}
+
+      - name: Pass scripts to base image at build time
+        # Just to put the `scripts` folder at the root of the project
+        if: ${{ inputs.context == 'base' }}
+        run: cp -r scripts/ base/scripts/
+    
+      - name: Make free space
+        # https://github.com/actions/virtual-environments/issues/2840
+        run: |
+          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/share/boost "$AGENT_TOOLSDIRECTORY"
+          docker rmi -f $(docker images -aq)
+        shell: bash
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Generate input and output image names
+        # Generate the full name of the input and output images
+        id: generate-image-names
+        run: |
+          # General parameters to build image names
+          owner=${{ env.OWNER }}
+          owner=$(echo "$owner" | awk '{print tolower($0)}')
+          date=$(date +%Y.%m.%d)
+          if [ -n "${{ matrix.gpu }}" ]; then
+              DEVICE_SUFFIX=-gpu
+          fi
+
+          # Compute input image name
+          base_image=${{ matrix.base_image }}
+          if [[ "$base_image" == *"-delim-"* ]]; then
+            image_name=$(echo $base_image | awk -F '-delim-' '{print $1}' )
+            tag=$(echo $base_image | awk -F '-delim-' '{print $2}' )
+          else
+            image_name=$(echo $base_image | awk -F ':' '{print $1}' )
+            tag=$(echo $base_image | awk -F ':' '{print $2}' )
+          fi
+          if [[ "${{ inputs.external_base_image }}" = true ]]; then
+            # If external (ubuntu or nvidia) : as is
+            base_image_final="${image_name}:${tag}"
+          else
+            # If internal (custom built) : add inseefrlab/onyxia-*
+            owner=${{ env.OWNER }}
+            owner=$(echo "$owner" | awk '{print tolower($0)}')
+            base_image_final="${owner}/${{ inputs.prefix }}-${image_name}:${tag}${DEVICE_SUFFIX}"
+          fi
+
+          # Compute output image name  
+          output_image=${{ matrix.output_image }}
+          if [[ "$output_image" == *"-delim-"* ]]; then
+            image_name=$(echo $output_image | awk -F '-delim-' '{print $1}' )
+            tag=$(echo $output_image | awk -F '-delim-' '{print $2}' )
+          else
+            image_name=$(echo $output_image | awk -F ':' '{print $1}' )
+            tag=$(echo $output_image | awk -F ':' '{print $2}' )
+          fi
+          output_image_final="$owner/${{ inputs.prefix}}-$image_name:${tag}${DEVICE_SUFFIX}"
+          output_image_final_with_date="$output_image_final-$date"
+          output_tags=$output_image_final,$output_image_final_with_date
+
+          # Make image names available to next steps
+          echo "base_image=${base_image_final}" >> $GITHUB_OUTPUT
+          echo "main_tag=$output_image_final" >> $GITHUB_OUTPUT
+          echo "tags=$output_tags" >> $GITHUB_OUTPUT
+
+          # Logging
+          echo "Base image : ${base_image_final}"
+          echo "Output image tags : ${output_tags}"
+        shell: bash
+
+      - name: Build and load to the Docker client
+        if: ${{ matrix.gpu != 'true' }}
+        uses: docker/build-push-action@v5
+        with:
+          load: true
+          push: false
+          context: ${{ inputs.context }}
+          tags: ${{ steps.generate-image-names.outputs.tags }}
+          build-args: |
+            BASE_IMAGE=${{ steps.generate-image-names.outputs.base_image }}
+            PYTHON_VERSION=${{ matrix.python_version }}
+            R_VERSION=${{ matrix.r_version }}
+            SPARK_VERSION=${{ matrix.spark_version }}
+          secrets: |
+            "github_token=${{ secrets.GITHUB_PAT }}"
+
+      - name: Test image using Google's Container Structure Test
+        if: ${{ matrix.gpu != 'true' }}
+        uses: ./.github/actions/container-structure-test
+        with:
+          image: ${{ steps.generate-image-names.outputs.main_tag }}
+          config: ./${{ inputs.context }}/tests.yaml
+
+      - name: Login to Docker Hub
+        if: ${{ inputs.branch == 'refs/heads/main' }}
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      
+      - name: Push to DockerHub
+        if: ${{ inputs.branch == 'refs/heads/main' }}
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          context: ${{ inputs.context }}
+          tags: ${{ steps.generate-image-names.outputs.tags }}
+          build-args: |
+            BASE_IMAGE=${{ steps.generate-image-names.outputs.base_image }}
+            PYTHON_VERSION=${{ matrix.python_version }}
+            R_VERSION=${{ matrix.r_version }}
+            SPARK_VERSION=${{ matrix.spark_version }}
+          secrets: |
+            "github_token=${{ secrets.GITHUB_PAT }}"

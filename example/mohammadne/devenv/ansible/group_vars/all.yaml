@@ -1,0 +1,6 @@
+---
+backup: true
+dotfiles:
+  repository: "mohammadne/dotfiles"
+  directory: "{{ ansible_env.HOME }}/Develop/dotfiles"
+graphical: false

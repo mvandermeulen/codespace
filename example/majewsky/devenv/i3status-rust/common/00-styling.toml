@@ -1,0 +1,19 @@
+icons_format = "{icon}"
+
+[icons]
+icons = "none"
+[icons.overrides]
+backlight = [ "bl" ]
+bat = [ "bat" ]
+bat_charging = "pwr"
+bat_not_available = "nobat"
+music_prev = "<<"
+music_next = ">>"
+music_play = "++"
+music_pause = "--"
+
+[theme]
+theme = "gruvbox-dark"
+[theme.overrides]
+alternating_tint_bg = "#141414"
+separator = ""

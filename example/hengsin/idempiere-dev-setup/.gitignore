@@ -1,0 +1,6 @@
+/idempiere/
+/eclipse/
+/*.jar
+/*.tar.gz
+/groovy*/
+/apache-groovy*.zip

@@ -1,0 +1,50 @@
+---
+- name: Perform variable assertion for Linker
+  ansible.builtin.assert:
+    that:
+      - role is defined
+      - source is defined
+      - destination is defined
+    fail_msg: "One or more variables are not defined, but they should be."
+  ignore_errors: false
+
+- name: check if source exists as a file or directory
+  block:
+  - stat:
+      path: "{{ source }}"
+    register: source_info
+  - fail:
+      msg: "source path doesn't exists on the system"
+    when: not source_info.stat.exists
+
+- name: "Create parent directory for {{ role }} config directory if it's missing"
+  ansible.builtin.shell: mkdir -p "$(dirname {{ destination }})"
+
+- name: "get information about destination path"
+  stat:
+    path: "{{ destination }}"
+  register: destination_info
+
+- name: "backup and remote pre-exsisting destination"
+  block:
+  - shell: >
+      random_tail=$(tr -dc 'a-z0-9' </dev/urandom | head -c 5) &&
+      cp -Rf "{{ destination }}" "{{ destination }}".backup-"$random_tail"
+    when: backup
+  - file:
+      path: "{{ destination }}"
+      state: absent
+  when: destination_info.stat.exists and not destination_info.stat.islnk
+
+- name: "symlink source to the destination"
+  ansible.builtin.shell: ln -s "{{ source }}" "{{ destination }}"
+  when: >
+    (
+      not destination_info.stat.exists
+    )
+    or
+    (
+      destination_info.stat.exists and 
+      destination_info.stat.islnk and 
+      not destination_info.stat.lnk_source == source
+    )

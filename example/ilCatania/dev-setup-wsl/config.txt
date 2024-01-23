@@ -1,0 +1,29 @@
+# user configuration settings
+EXAMPLE_NAME="Wasabi Mayo"
+EXAMPLE_EMAIL="wasabi.mayo@sushi.jp"
+
+# ssh configuration settings
+SSH_ALGO="ed25519"
+SSH_BYTES="4096"
+SSH_PASSPHRASE=""
+
+# gpg configuration settings
+GPG_ALGO="rsa4096"
+GPG_USAGE="default"
+GPG_EXPIRY="0"
+GPG_PASSPHRASE=""
+
+# git configuration
+GIT_TEMPLATE_DIR=~/.git-template
+REMOTE_GIT_HOST=github.com
+REMOTE_GIT_SSH_ADMIN=settings/keys
+REMOTE_GIT_GPG_ADMIN=settings/keys
+
+# python configuration
+PYTHON_VERSION=3.10
+
+# pycharm configuration
+JETBRAINS_TOOLBOX_VERSION="1.27.2.13801"
+JETBRAINS_TOOLBOX_INSTALL_DIR="/opt"
+JETBRAINS_TOOLBOX_EXE="${JETBRAINS_TOOLBOX_INSTALL_DIR}/jetbrains-toolbox-${JETBRAINS_TOOLBOX_VERSION}/jetbrains-toolbox"
+JETBRAINS_TOOLBOX_URL=https://download.jetbrains.com/toolbox/jetbrains-toolbox-${JETBRAINS_TOOLBOX_VERSION}.tar.gz

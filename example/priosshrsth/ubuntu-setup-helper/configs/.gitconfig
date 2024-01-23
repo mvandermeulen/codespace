@@ -1,0 +1,26 @@
+[core]
+	excludesfile = $HOME/.global_gitignore
+	editor = nano
+	fileMode = false
+[color]
+	ui = true
+[user]
+	name = username
+	email = username@gmail.com
+[alias]
+	init = init --config core.filemode=false
+	clone = clone --config core.filemode=false
+	clear-cache = rm -r --cached .
+	br-delete-useless = "!f(){\
+			git branch | grep -v "master" | grep -v ^* | xargs git branch -d;\
+	}; f"
+	# Delete all local branches but master and the current one.
+	br-delete-useless-force = "!f(){\
+			git branch | grep -v "master" | grep -v ^* | xargs git branch -D;\
+	}; f"
+	permission-reset = !git diff -p -R --no-ext-diff --no-color | grep -E \"^(diff|(old|new) mode)\" --color=never | git apply
+	permission-reset = !git diff -p -R --no-ext-diff --no-color | grep -E \"^(diff|(old|new) mode)\" --color=never | git apply
+[pull]
+	rebase = false
+[init]
+	defaultBranch = main

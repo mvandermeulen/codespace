@@ -1,0 +1,59 @@
+---
+- name: Install requirements
+  ansible.builtin.apt:
+    update_cache: yes
+    pkg:
+    - locales
+    - python3.11
+    - libpython3.11
+    - libpython3.11
+    - libsdl2-2.0-0
+
+- name: Define workspace path variable
+  set_fact:
+    workspace: "/opt/workspace"
+
+- name: ensure workspace directory exists
+  file:
+    path: "{{ workspace }}"
+    state: directory
+
+# https://ballistica.net/downloads
+- name: Download and unarchive the build file
+  ansible.builtin.unarchive:
+    src: "https://files.ballistica.net/bombsquad/builds/BombSquad_Server_Linux_x86_64_{{ version }}.tar.gz"
+    dest: "{{ workspace }}"
+    remote_src: yes
+    extra_opts: [ --strip-components=1 ]
+
+- name: Remove default config file
+  ansible.builtin.file:
+    path: "{{ workspace }}/config.yaml"
+    state: absent
+
+- name: Write our custom config file
+  ansible.builtin.template:
+    src: config.yaml.j2
+    dest: "{{ workspace }}/config.yaml"
+
+- name: Write service file
+  ansible.builtin.template:
+    src: bombsquad.service.j2
+    dest: "/etc/systemd/system/bombsquad.service"
+  vars:
+    executable_path: "{{ workspace }}/bombsquad_server"
+
+- name: Reload systemctl daemon and start the process
+  systemd:
+    state: restarted
+    daemon_reload: yes
+    name: bombsquad
+
+- name: Register status of the service
+  systemd:
+    name: bombsquad
+  register: status_result
+
+- name: Get process PID
+  ansible.builtin.debug:
+    msg: "process has been started sucessfully with PID: {{ status_result.status.MainPID }}"

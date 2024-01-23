@@ -1,0 +1,15 @@
+#------------------------------------------------------------------------------------------
+# helm values for local usage (self generated certificates)
+# see https://github.com/traefik/traefik-helm-chart/blob/master/traefik/values.yaml
+#------------------------------------------------------------------------------------------
+
+globalArguments:
+  - "--global.checknewversion"
+  - "--global.sendanonymoususage"
+  # added for kubernetes dashboard
+  - "--serversTransport.insecureSkipVerify=true"
+
+ports:
+  websecure:
+    tls:
+      enabled: true

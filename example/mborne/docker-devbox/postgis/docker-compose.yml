@@ -1,0 +1,24 @@
+version: '3.5'
+
+services:
+
+  postgis:
+    container_name: postgis
+    image: postgis/postgis:13-3.2
+    ports:
+      - "${DEVBOX_PORT_PREFIX}5432:5432"
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - postgis-data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  postgis-data:
+    name: postgis-data-13
+
+networks:
+  default:
+    name: devbox
+    external: true

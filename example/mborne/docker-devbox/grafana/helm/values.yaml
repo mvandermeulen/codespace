@@ -1,0 +1,27 @@
+persistence:
+  enabled: true
+
+sidecar:
+  dashboards:
+    enabled: false
+  datasources:
+    enabled: false
+
+deploymentStrategy:
+  type: Recreate
+
+datasources:
+ datasources.yaml:
+   apiVersion: 1
+   datasources:
+   - name: Prometheus
+     type: prometheus
+     url: http://prometheus-server.prometheus
+     access: proxy
+     isDefault: true
+   - name: Loki
+     type: loki
+     url: http://loki.loki
+     access: proxy
+     isDefault: false
+     editable: true

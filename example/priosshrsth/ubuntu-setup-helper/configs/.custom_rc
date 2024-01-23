@@ -1,0 +1,217 @@
+
+export RAILS_ENV="development"
+export NITRO_NODE_ALT_PORT="8090"
+export NITRO_HTTP_PORT="8093"
+export PGHOST="postgres"
+export PATH="$HOME/.rbenv/bin:$PATH"
+
+alias python='python3'
+PATH="$HOME/.config/composer/vendor/bin:$PATH"
+PATH="$HOME/.ngrok:$PATH"
+alias docc='docker-compose'
+alias ledon='xset led on'
+alias ledoff='xset led off'
+alias logs='docker-compose logs'
+alias punit='vendor/bin/phpunit'
+alias upgrade-yarn='yarn upgrade-interactive --latest'
+alias mysql7='dockerip mysql7'
+alias comment='git add . && git commit --allow-empty-message -m'
+alias update_nvm='nvm install node --reinstall-packages-from=node'
+alias gc='git checkout'
+alias excluded='git ls-files --others --exclude-from=.git/info/exclude | grep -v node_modules'
+alias exclude='git update-index --skip-worktree'
+alias include='git update-index --no-skip-worktree'
+alias ignore='git update-index --assume-unchanged'
+alias unignore='git update-index --no-assume-unchanged'
+alias ignored='git ls-files -v | grep "^[[:lower:]]"'
+export GOPATH=$HOME/go
+export PATH=$PATH:$HOME/.go/bin:$HOME/go/bin:$HOME/.yarn/bin:/home/paevamp/.config/composer/vendor/bin
+
+phptest()
+{
+    if [ $# -ge 1 ]
+    then
+        punit --filter=$1
+    else
+        reset && punit
+    fi
+}
+
+ngserve()
+{
+    if [ $# -ge 1 ]
+    then
+        ngrok http $1 -host-header=localhost:$1
+    else
+        ngrok http 3000 -host-header=localhost:3000
+    fi    
+}
+
+squash()
+{
+    if [ $# -ge 1 ]
+    then
+        git rebase -i HEAD~$1
+    fi
+}
+
+gitbranch()
+{
+    git rev-parse --abbrev-ref HEAD 
+}
+
+gitremote()
+{
+    git remote
+}
+
+gpush()
+{
+    force_push=false
+    while getopts "ef" flag; do
+        case "${flag}" in
+            --f)
+                force_push=true
+                unshift
+            ;;
+            --)
+            exit 1 ;;
+        esac
+    done
+
+    if [ force_push = true ]
+    then
+        git push -f $(gitremote) $(gitbranch)
+    else
+        git push $(gitremote) $(gitbranch)
+    fi
+}
+
+rebuild()
+{
+    reset && docker-compose -f $(getlocalfile docker-compose-local.yml docker-compose.yml) up -d && reset
+}
+
+forcebuild()
+{
+    reset && docker-compose -f $(getlocalfile docker-compose-local.yml docker-compose.yml) up -d --force --build && reset
+}
+
+getentrypoint()
+{
+    file=$(getlocalfile docker-compose-local.yml docker-compose.yml)
+    entry=$(awk -F ' ' '$1=="entrypoint:"{print $2}' ${file})
+    [ ! -z "$entry" ] && echo ${entry/';'} || echo "/bin/sh"
+}
+
+getlocalfile()
+{
+	if [ ! -f $1 ]; then
+	    echo "$2"
+    else
+        echo "$1"
+	fi
+}
+
+getcontainername()
+{
+    file=$(getlocalfile docker-compose-local.yml docker-compose.yml)
+    container=$(awk -F ' ' '$1=="container_name:"{print $2}' ${file})
+    echo ${container/';'}
+}
+
+cont()
+{
+    if [ $# -ge 1 ]
+    then
+        docker exec -it $(getcontainername) "$@"
+    else
+        docker exec -it $(getcontainername) $(getentrypoint)
+    fi
+    
+}
+
+function gcpush()
+{
+    comment_text=''
+    add_emoji=false
+    emoji='😌'
+    force_push=false
+    # while getopts "ef" flag; do
+    #     case "${flag}" in
+    #         --e)
+    #             add_emoji=true
+    #             if [ -z "$OPTARG" ]
+    #             then
+    #                 emoji="${OPTARG}"
+    #                 unshift
+    #             fi
+    #             unshift
+    #         ;;
+    #         --f)
+    #             force_push=true
+    #             unshift
+    #         ;;
+    #         --)
+    #         exit 1 ;;
+    #     esac
+    # done
+    if [ $# -ge 1 ]
+    then
+        comment_text="$@"
+    fi
+    if [ "$add_emoji" = true ]
+    then
+        if [ -z "$comment_text" ]
+        then
+            comment_text="${emoji}"
+        else
+            comment_text="${comment_text} empoji ${emoji}"
+        fi
+    fi
+    
+    comment "${comment_text}"
+    if [ "$force_push" = true ]
+    then
+        gpush -f
+    else
+        gpush
+    fi
+}
+
+### get ip of docker by container name
+dockerip()
+{
+    if [ $# -ge 1 ]
+    then
+        docker inspect $1 | grep 'IPAddress'
+    else
+        docker inspect $(getcontainername) | grep 'IPAddress'
+    fi
+}
+
+dcleanup(){
+    yes | docker system prune -a
+    docker rm -v $(docker ps --filter status=exited -q 2>/dev/null) 2>/dev/null
+    docker rmi $(docker images --filter dangling=true -q 2>/dev/null) 2>/dev/null
+}
+
+removeImages() {
+    docker rmi $(docker images -a -q)
+}
+
+dspace(){
+    sudo du -cha --max-depth=1 /var/lib/docker | grep -E "M|G"
+}
+
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+export PATH="$HOME/.rbenv/bin:$PATH"
+eval "$(rbenv init -)"
+export PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"
+
+export PATH="$HOME/.go/current/bin:$PATH"
+export PATH="$HOME/.go/current/bin:$PATH"

@@ -1,0 +1,13 @@
+[user]
+    name = Nicola De Angeli
+[core]
+    editor = nvim
+    excludesfile = ~/.gitignore  # Global gitignore
+[merge]
+    conflictstyle = diff3  # Also show common ancestor in conflicts
+[pull]
+    rebase = true  # Rebase instead of merge to incorporate remote changes
+[push]
+    autoSetupRemote = true  # Create on remote a branch with same name on first push
+[include]
+    path = .gitconfig.local  # Sensitive information

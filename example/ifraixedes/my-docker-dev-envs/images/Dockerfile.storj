@@ -1,0 +1,68 @@
+FROM ifraixedes/ubuntu/base:22.04
+
+ARG USER_NAME
+ARG DOCKER_GID
+
+RUN mkdir /tmp/box-setup
+ADD setup-scripts /tmp/box-setup/setup-scripts
+
+RUN cd /tmp/box-setup/setup-scripts \
+      && ./storj/01-golang.sh \
+      && ./storj/50-storj-repo-dev-requirements.sh \
+      && ./storj/70-cockroach-client.sh \
+      && ./storj/70-drone.sh \
+      && ./storj/private/70-google-cloud-tools.sh \
+      && ./storj/70-helm-v3.sh \
+      && ./storj/70-kubectl-and-plugins.sh \
+      && ./storj/70-kubie.sh \
+      && ./storj/70-netcat.sh \
+      && ./storj/70-packer.sh \
+      && ./storj/70-postgresql-client.sh \
+      && ./storj/70-prometheus.sh \
+      && ./storj/70-python-dev.sh \
+      && ./storj/70-salt.sh \
+      && ./storj/70-sops.sh \
+      && ./storj/70-spot.sh \
+      && ./storj/70-stern.sh \
+      && ./storj/70-terraform.sh \
+      && ./storj/70-terragrunt.sh \
+      && ./storj/70-yamllint.sh \
+      && ./storj/99-golangci-lint.sh \
+      && ./99-amber.sh \
+      && ./99-ain.sh \
+      && ./99-aws-cli.sh \
+      && ./99-bat.sh \
+      && ./99-chroma.sh \
+      && ./99-curlie.sh \
+      && ./99-dasel.sh \
+      && ./99-difftastic.sh \
+      && ./99-docker-cli.sh "${USER_NAME}" "${DOCKER_GID}" \
+      && ./99-fzf.sh \
+      && ./99-glow.sh \
+      && ./99-golang-revive.sh \
+      && ./99-hyperfine.sh \
+      && ./99-ijq.sh \
+      && ./99-jq.sh \
+      && ./99-just.sh \
+      && ./99-kdash.sh \
+      && ./99-kind.sh \
+      && ./99-lnav.sh \
+      && ./99-mcfly.sh \
+      && ./99-mods.sh \
+      && ./99-procs.sh \
+      && ./99-protobuf-compiler.sh \
+      && ./99-pueue.sh \
+      && ./99-ripgrep.sh \
+      && ./99-shell-fmt.sh \
+      && ./99-shellcheck.sh \
+      && ./99-sqlite.sh \
+      && ./99-tig.sh \
+      && ./99-vale.sh \
+      && ./99-yq.sh \
+      && apt-get autoremove \
+      && apt-get clean
+
+RUN rm -rf /tmp/box-setup
+WORKDIR "/home/${USER_NAME}"
+
+CMD ["bash"]

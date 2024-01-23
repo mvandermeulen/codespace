@@ -1,0 +1,7 @@
+.idea/*
+.vscode/*
+/node_modules
+.phpstorm.meta.php
+.env
+.local_gitignore
+.pnpm_store

@@ -1,0 +1,26 @@
+FROM ubuntu:22.04
+
+ARG LOCALE=en_US.UTF-8
+ARG USER_NAME
+ARG USER_ID
+ARG USER_PWD
+
+RUN mkdir /tmp/box-setup
+ADD setup-scripts /tmp/box-setup/setup-scripts
+
+RUN cd /tmp/box-setup/setup-scripts \
+      && ./00-os-update-and-config.sh "${LOCALE}" "${USER_NAME}" "${USER_ID}" "${USER_PWD}" \
+      && ./01-essential-tools.sh \
+      && ./02-dev-essentials.sh \
+      && ./02-nvim.sh \
+      && ./02-universal-ctags.sh \
+      && ./03-home.sh "${USER_NAME}" \
+      && ./99-delta.sh \
+      && ./99-fnm.sh \
+      && apt-get autoremove \
+      && apt-get clean
+
+RUN rm -rf /tmp/box-setup
+WORKDIR "/home/${USER_NAME}"
+
+CMD ["bash"]

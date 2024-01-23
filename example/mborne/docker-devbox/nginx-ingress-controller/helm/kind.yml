@@ -1,0 +1,29 @@
+ingressClassResource:
+  name: nginx
+
+nodeSelector:
+  ingress-ready: "true"
+
+tolerations:
+  - key: node-role.kubernetes.io/control-plane
+    operator: Equal
+    effect: NoSchedule
+  - key: node-role.kubernetes.io/master
+    operator: Equal
+    effect: NoSchedule
+
+service:
+  type: NodePort
+  nodePorts:
+    http: 30000
+    https: 30001
+    metrics: 30002
+
+# prometheus
+metrics:
+  enabled: true
+  service:
+    type: ClusterIP
+    ports:
+      # ATTENTION : port de metrics sur le Pod
+      metrics: 10254

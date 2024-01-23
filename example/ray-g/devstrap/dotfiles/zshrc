@@ -1,0 +1,69 @@
+# -*- mode: shell-script;  -*-
+# vim: ft=shell: sw=2:
+
+# Path to your antigen installation.
+export ANTIGEN=$HOME/.antigen
+
+# Configure Antigen
+declare -a ANTIGEN_CHECK_FILES
+ANTIGEN_CHECK_FILES=("${HOME}/.zshrc" "${HOME}/.zshrc.local" "${HOME}/.zshrc.theme.local")
+
+# Load Antigen
+source ${ANTIGEN}/antigen.zsh
+
+# Load the oh-my-zsh
+antigen use oh-my-zsh
+
+# Bundles from the default repo (robbyrussell's oh-my-zsh)
+antigen bundle git
+antigen bundle colored-man-pages
+antigen bundle extract
+antigen bundle sudo
+antigen bundle z
+antigen bundle tmux
+antigen bundle colorize
+antigen bundle history
+# antigen bundle emacs
+antigen bundle copypath
+antigen bundle copyfile
+[[ $OSTYPE == darwin* ]] && antigen bundle osx
+
+# Misc bundles
+antigen bundle djui/alias-tips
+[[ $OSTYPE != cygwin* ]] && antigen bundle andrewferrier/fzf-z
+
+# antigen bundle zsh-users/zsh-completions
+antigen bundle zsh-users/zsh-autosuggestions
+antigen bundle zdharma/fast-syntax-highlighting
+# antigen bundle zsh-users/zsh-syntax-highlighting
+antigen bundle zsh-users/zsh-history-substring-search
+
+# Basic PATH configuration
+export PATH="${HOME}/bin:/usr/local/bin:/usr/bin:/bin:/usr/bin/X11"
+
+# Load the theme
+antigen theme ray-g/zsh-theme
+
+# Load the shell dotfiles, and then some:
+# * ~/.path can be used to extend `$PATH`.
+# * ~/.zshrc.local can be used for other settings you don’t want to commit.
+for file in ~/.{path,exports,aliases,functions,zshrc.local,zshrc.theme.local}; do
+	[ -r "$file" ] && [ -f "$file" ] && source "$file";
+done;
+unset file
+
+# Tell Antigen that you've done
+antigen apply
+
+# Hook after antigen_apply
+file=~/.zshrc.final.local
+[ -r "$file" ] && [ -f "$file" ] && source "$file"
+unset file
+
+# Source rust
+[ -f "$HOME/.cargo/env" ] && source "$HOME/.cargo/env"
+
+# Completion enhancements
+[ -f ~/.completion.zsh ] && source ~/.completion.zsh
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh

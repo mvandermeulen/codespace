@@ -1,0 +1,45 @@
+---
+- name: clone dotfiles if not exist
+  block:
+  - stat:
+      path: "{{ dotfiles.directory }}"
+    register: dotfiles_directory_status
+  - git:
+      repo: "https://github.com/{{ dotfiles.repository }}.git"
+      dest: "{{ dotfiles.directory }}"
+      version: "main"
+    when: not dotfiles_directory_status.stat.exists
+
+- name: check if dotfiles is a git repository
+  block:
+  - stat:
+      path: "{{ dotfiles.directory }}/.git"
+    register: dotfiles_directory_git_status
+  - fail:
+      msg: "dotfiles is present but is not a git repository"
+    when: not dotfiles_directory_git_status.stat.exists
+
+- name: check if dotfiles has a correct git repository
+  block:
+  - ansible.builtin.set_fact:
+      dotfiles_remote_ssh: "git@github.com:{{ dotfiles.repository }}.git"
+      dotfiles_remote_https: "https://github.com/{{ dotfiles.repository }}.git"
+  - shell:
+      cmd: git config --get remote.origin.url
+      chdir: "{{ dotfiles.directory }}"
+    register: dotfiles_current_git_url
+    changed_when: false
+  - fail:
+      msg: "dotfiles is present but points to an invalid origin"
+    when: >
+      dotfiles_current_git_url.stdout != dotfiles_remote_ssh and
+      dotfiles_current_git_url.stdout != dotfiles_remote_https
+  - shell:
+      cmd: git remote set-url origin "{{ dotfiles_remote_ssh }}"
+      chdir: "{{ dotfiles.directory }}"
+    when: dotfiles_current_git_url.stdout == dotfiles_remote_https
+
+- name: pull the latest changes of the dotfiles repository
+  shell:
+    cmd: git pull origin -q --force
+    chdir: "{{ dotfiles.directory }}"

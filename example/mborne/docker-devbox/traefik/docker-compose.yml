@@ -1,0 +1,33 @@
+version: '3.7'
+
+services:
+
+  traefik:
+    container_name: traefik
+    image: traefik-dev:latest
+    build: img/traefik-dev
+    ports:
+     - "80:80"
+     - "443:443"
+    environment:
+      - DEVBOX_HOSTNAME=${DEVBOX_HOSTNAME}
+    volumes:
+      - traefik-certs:/certs:rw
+      - traefik-config:/etc/traefik:rw
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    privileged: true
+    # bypass userns-remap
+    userns_mode: 'host'
+    restart: unless-stopped
+
+volumes:
+  traefik-config:
+    name: traefik-config
+  traefik-certs:
+    name: traefik-certs
+
+networks:
+  default:
+    name: devbox
+    external: true
+

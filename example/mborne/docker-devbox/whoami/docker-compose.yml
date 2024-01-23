@@ -1,0 +1,15 @@
+version: '3.5'
+
+services:
+
+  whoami:
+    image: containous/whoami
+    labels:
+    - "traefik.enable=true"
+    - "traefik.http.routers.whoami.rule=Host(`whoami.${DEVBOX_HOSTNAME}`)"
+    restart: unless-stopped
+
+networks:
+  default:
+    name: devbox
+    external: true

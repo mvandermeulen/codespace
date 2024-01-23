@@ -1,0 +1,4 @@
+- hosts: machine
+  become: yes
+  roles:
+    - { role: bombsquad, tags: 'bombsquad' }

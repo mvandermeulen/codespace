@@ -1,0 +1,6 @@
+---
+version: "1.7.28"
+party_name: FFA
+party_is_public: false
+port: 43210
+max_party_size: 10

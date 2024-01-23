@@ -1,0 +1,228 @@
+export EDITOR=vim
+export PAGER="less -R"
+
+# set colors for man(1)
+export LESS_TERMCAP_mb=$'\e[01;31m'       # start of blinking text
+export LESS_TERMCAP_md=$'\e[01;38;5;74m'  # start of bold text
+export LESS_TERMCAP_me=$'\e[0m'           # end of blinking/bold text
+export LESS_TERMCAP_so=$'\e[30;48;5;246m' # start of statusline text
+export LESS_TERMCAP_se=$'\e[0m'           # end of statusline text
+export LESS_TERMCAP_us=$'\e[04;38;5;146m' # start of underlined text
+export LESS_TERMCAP_ue=$'\e[0m'           # end of underlined text
+
+if [ -z "$LOCALPROFILEREAD" ]; then
+	export PATH="$HOME/bin:/x/bin:$PATH"
+	export GOPATH=/x
+	export GOBIN=/x/bin
+
+	if [ -d $HOME/perl5 ]; then
+		eval $(perl -I ~/perl5/lib/perl5/ -Mlocal::lib)
+	fi
+	if [ -d $HOME/.rbenv ]; then
+		export PATH="$HOME/.rbenv/bin:$PATH"
+	fi
+fi
+
+# fix styling of KDE apps under non-KDE desktop (e.g. Sway)
+if [ "${XDG_CURRENT_DESKTOP}" != KDE -a "${XDG_CURRENT_DESKTOP}" != GNOME ]; then
+	export QT_QPA_PLATFORMTHEME="qt5ct"
+fi
+
+# aliases
+alias less='less -R'            # recognise color characters
+if hash mpc &>/dev/null; then
+	alias m=mpc
+	alias mi='mpc idle player; mpc'
+fi
+if hash ncmpcpp &>/dev/null; then
+	alias ncmpc=ncmpcpp
+fi
+if [ "$(uname)" = "Linux" ]; then
+	alias ls='ls --color=auto'
+fi
+if [ -f /usr/bin/steam ]; then
+	alias steam="nice -n10 /usr/bin/steam"
+fi
+if [ -f /usr/bin/steam-native ]; then
+	alias steam-native="nice -n10 /usr/bin/steam-native"
+fi
+if grep ID=arch /etc/os-release &>/dev/null; then
+	alias p=pacman-wrapper
+fi
+if hash pwget &>/dev/null; then
+	pwcopy() {
+		if [ "${WAYLAND_DISPLAY}" != "" ]; then
+			pwget "$@" | wl-copy --type text/plain --paste-once --trim-newline
+		else
+			pwget "$@" | xsel -bi
+		fi
+	}
+fi
+if hash pwget2 &>/dev/null; then
+	pwcopy2() {
+		if [ "${WAYLAND_DISPLAY}" != "" ]; then
+			pwget2 "$@" | wl-copy --type text/plain --paste-once --trim-newline
+		else
+			pwget2 "$@" | xsel -bi
+		fi
+	}
+fi
+if hash units &>/dev/null; then
+	alias units="units --verbose -o %.25g"
+fi
+if hash info &>/dev/null; then
+	info() {
+		if [ -t 1 ]; then
+			command info --subnodes "$@" | less -RFX
+		else
+			command info --subnodes "$@"
+		fi
+	}
+fi
+if hash makepkg &>/dev/null; then
+	mksrcinfo() {
+		makepkg --printsrcinfo > .SRCINFO
+	}
+fi
+cg() {
+	local REPO_PATH="$(rtree get "$1")"
+	[ $? -eq 0 ] && cd "${REPO_PATH}"
+}
+
+if hash rg &>/dev/null; then
+	rg() {
+		if [ -t 1 ]; then
+			command rg --sort-files -g '!/vendor/' -p "$@" | less -RFX
+		else
+			command rg --sort-files -g '!/vendor/' "$@"
+		fi
+	}
+fi
+
+forever() {
+	while true; do
+		"$@"
+		sleep 0.1 # to make ^C work correctly if "$@" does not handle it correctly
+	done
+}
+
+if hash mpv &>/dev/null; then
+	mpv() {
+		if [ $# -eq 0 ]; then
+			# no args given: paste target from clipboard
+			if [ "${WAYLAND_DISPLAY}" != "" ]; then
+				env mpv "$(wl-paste --type text/plain)"
+			else
+				env mpv "$(xsel -b)"
+			fi
+		else
+			# ignore *.description files that a glob picked up (unless there are no other args)
+			local -a MPV_ARGS
+			for MPV_ARG in "$@"; do
+				[[ "$MPV_ARG" != *.description ]] && MPV_ARGS+=("$MPV_ARG")
+			done
+			if [ "${#MPV_ARGS}" = 0 ]; then
+				env mpv "$@"
+			else
+				env mpv "${MPV_ARGS[@]}"
+			fi
+		fi
+	}
+	zdf() {
+		env mpv https://www.zdf.de/sender/zdf/zdf-live-beitrag-100.html
+	}
+	zdfinfo() {
+		env mpv https://www.zdf.de/dokumentation/zdfinfo-doku/zdfinfo-live-beitrag-100.html
+	}
+	phoenix() {
+		env mpv https://www.zdf.de/sender/phoenix/phoenix-live-beitrag-100.html
+	}
+fi
+
+if hash youtube-dl &>/dev/null; then
+	youtube-dl() {
+		if [ $# -eq 0 ]; then
+			if [ "${WAYLAND_DISPLAY}" != "" ]; then
+				env youtube-dl -f best "$(wl-paste --type text/plain)"
+			else
+				env youtube-dl -f best "$(xsel -b)"
+			fi
+		else
+			env youtube-dl "$@"
+		fi
+	}
+fi
+
+if hash nix-build &>/dev/null; then
+	nb() {
+		if [ $# -eq 1 ]; then
+			nix-build -E "with (import <nixpkgs> {}); callPackage $1 {}"
+		else
+			echo "usage: nb <derivation-source-file>" >&2
+			return 1
+		fi
+	}
+fi
+
+if hash monastery &>/dev/null; then
+	mo() {
+		if [ $# -eq 1 ]; then
+			monastery "/x/src/git.bethselamin.de/stefan/secrets/monastery/$1.json"
+		else
+			echo "usage: mo <playbook-name>" >&2
+			return 1
+		fi
+	}
+fi
+
+if [ -d /usr/share/doc/rfc ]; then
+	rfc() {
+		if [ $# -eq 1 ]; then
+			if [ -t 1 ]; then
+				less "/usr/share/doc/rfc/txt/rfc$1.txt"
+			else
+				echo "/usr/share/doc/rfc/txt/rfc$1.txt"
+			fi
+		else
+			echo "usage: rfc <number>" >&2
+			return 1
+		fi
+	}
+fi
+
+# for OpenStack
+if hash cloud &>/dev/null; then
+	cloud_is() {
+		unset $(env | grep '^OS_' | cut -d= -f1) CURRENT_OS_CLOUD
+		eval "$(/x/bin/cloud "$@"; echo "EXIT_CODE=$?")"
+		if [ "$EXIT_CODE" = 0 ]; then
+			env | grep '^OS_' | sed '/^OS_PASSWORD=/s/=.*/=<hidden>/' | sort
+			if [ -z "$OS_PASSWORD" ]; then
+				echo -n "OS_PASSWORD="
+				read -s OS_PASSWORD && export OS_PASSWORD
+				if [ -n "$OS_PASSWORD" ]; then
+					echo "<sha256:$(echo "$OS_PASSWORD" | sha256sum | cut -c1-16)...>"
+				else
+					echo "<not set>"
+				fi
+			fi
+		fi
+	}
+fi
+
+# for Ruby
+if [ -d $HOME/.rbenv ]; then
+	eval "$(rbenv init -)"
+fi
+if hash foreman &>/dev/null; then
+	foreman() {
+		[ -f .procfile ] && env foreman "$@" -f .procfile || env foreman "$@"
+	}
+fi
+
+git-all-sapcc() {
+	for DIR in /x/src/github.com/sapcc/*; do git -C $DIR -c color.ui=always "$@" | sed "s/^/[$(printf '% 25s' "$(basename "${DIR}")")] /"; done
+}
+
+# this must always be at the end
+export LOCALPROFILEREAD="yes"
