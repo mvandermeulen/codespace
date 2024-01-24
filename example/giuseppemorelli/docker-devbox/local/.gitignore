@@ -1,7 +1,0 @@
-.env
-/config/composer/*
-!/config/composer/.gitkeep
-/config/ssh/*
-!/config/ssh/.gitkeep
-/tmp/logs/*
-!/tmp/logs/.gitkeep

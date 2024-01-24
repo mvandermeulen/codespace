@@ -1,5 +1,0 @@
-[[block]]
-block = "net"
-device = "wl.*"
-format = " wl $signal_strength {$ip|×} "
-missing_format = " wl × "

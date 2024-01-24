@@ -1,3 +1,0 @@
-#!/usr/bin/perl
-use File::Spec::Functions qw(abs2rel);
-print abs2rel($ARGV[1], $ARGV[0]), "\n";

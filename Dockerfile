@@ -17,15 +17,15 @@ ARG FONT_VERSION="3.0.1"
 ENV FONT_VERSION $FONT_VERSION
 ENV LC_ALL=C.UTF-8
 
-COPY ./scripts/install-deps.sh .
-COPY ./scripts/configure-timezone-locales.sh .
-COPY ./setup-user.sh .
+COPY ./scripts/common/install-deps.sh .
+COPY ./scripts/common/configure-timezone-locales.sh .
+COPY ./scripts/common/setup-user.sh .
 
 RUN ./install-deps.sh \
     && ./configure-timezone-locales.sh \
-    && export LANG=en_AU.UTF-8 
+    && export LANG=en_AU.UTF-8 \
+    && ./setup-user.sh
 
-RUN ./setup-user.sh
 USER $USERNAME
 # Set shell to zsh
 SHELL ["zsh", "-c"]
@@ -41,7 +41,7 @@ ENV RHOME=/root
 WORKDIR $HOME
 COPY --chown=$USERNAME ./scripts /home/$USERNAME/scripts
 COPY --chown=$USERNAME ./config /home/$USERNAME/config
-RUN ./scripts/setup-directories.sh
+RUN ./scripts/common/setup-directories.sh
 
 
 #####################
@@ -57,7 +57,9 @@ COPY --chown=$USERNAME ./config/HELP /home/$USERNAME/HELP
 #####################
 # Setup FZF
 #####################
-RUN ./scripts/install-fzf.sh
+RUN ./scripts/common/install-tmux.sh \
+    && ./scripts/install-fzf.sh \
+    && ./scripts/common/install-nvim.sh
 
 
 ##########################################
@@ -114,7 +116,7 @@ RUN ./scripts/install-nvim.sh
 #####################
 # Setup Tmux
 #####################
-RUN ./scripts/install-tmux.sh
+
 
 
 #####################
