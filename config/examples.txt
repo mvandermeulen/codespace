@@ -59,9 +59,22 @@ https://learn.microsoft.com/en-us/cli/azure/install-azure-cli-linux?pivots=apt
 
 
 
+https://github.com/egandro/zen-packer/tree/master
 
 
+https://github.com/dmotte/docker-portmap-client/blob/main/build/client.sh
+https://github.com/dmotte/docker-images/blob/main/socat/build/Dockerfile
+https://github.com/dmotte/docker-portmap-server/blob/main/build/startup.sh
+https://github.com/dmotte/desktainer/blob/main/build/supervisord.conf
+https://github.com/dmotte/cronjobs/blob/main/jobs/40-get-repos.sh
+https://github.com/dmotte/misc/blob/main/scripts/get-standalone-golang.sh
+https://github.com/dmotte/misc/blob/main/scripts/remote-dir-run.sh
+
+https://github.com/WisdomSky/Cloudflared-web
+
+https://hub.docker.com/r/yshojihep/vscode
 
 
+https://github.com/paketo-buildpacks/jammy-static-stack/tree/main
 
 
